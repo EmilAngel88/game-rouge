@@ -20,7 +20,7 @@ h1 { font-family: "Playfair Display"; font-size: 30px; padding: 10px 0px; margin
 .field .tile { position: absolute; width: 30px; height: 30px; background-size: 100%; background-image: url(images/tile-.png); z-index: 5; }
 .field .tileW { background-image: url(images/tile-W.png); }
 .field .tileE { background-image: url(images/tile-E.png); z-index: 10; }
-.field .tileP { background-image: url(images/tile-P.png); z-index: 10; }
+.field .tileP { background-image: url(images/tile-P.png)!important; z-index: 10 }
 .field .tileHP { background-image: url(images/tile-HP.png); z-index: 9; }
 .field .tileSW { background-image: url(images/tile-SW.png); z-index: 9; }
 .field .tileE .health { background-color: #ff0000; z-index: 11; position: absolute; left: 0px; top: 0px; height: 3px; width: 100%}
@@ -38,6 +38,7 @@ h1 { font-family: "Playfair Display"; font-size: 30px; padding: 10px 0px; margin
 		<div class="inventory-box"><div class="inventory"></div></div-->
 
 		<script src="utils.js"></script>
+		<script src="renderer.js"></script>
 		<script src="map.js"></script>
 		<script src="entities.js"></script>
 		<script src="game.js"></script>
@@ -45,7 +46,7 @@ h1 { font-family: "Playfair Display"; font-size: 30px; padding: 10px 0px; margin
 		<script>
 			var options = {width: 40, height: 20, emptyCellRatio: 35}
 			var game = new Game(options);
-			game.init();
+			game.start();
 		</script>
 	</body>
 </html>

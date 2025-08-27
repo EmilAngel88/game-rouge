@@ -1,12 +1,12 @@
-function Map(width, height, emptyCellRatio){
+function GameMap(width, height, emptyCellRatio){
     this.width = width;
     this.height = height;
     this.emptyCellRatio = emptyCellRatio / 100;
     this.fieldStates = [];
 }
 
-Map.prototype.generate = function() {
-    // Создаём пустую матрицу слоёв
+GameMap.prototype.generate = function() {
+    // 1. Создаём пустую матрицу слоёв
     this.fieldStates = Utils.createMatrix(this.height, this.width, function() {
         return { layers: [''] };
     });
@@ -29,7 +29,7 @@ Map.prototype.generate = function() {
     this.applyRooms(roomsData);
 };
 
-Map.prototype.fillWalls = function () {
+GameMap.prototype.fillWalls = function () {
     for (var i = 0; i < this.height; i++) {
         for (var j = 0; j < this.width; j++) {
             this.fieldStates[i][j].layers.push('W');
@@ -37,11 +37,11 @@ Map.prototype.fillWalls = function () {
     }
 };
 
-Map.prototype.clearWall = function (cell) {
+GameMap.prototype.clearWall = function (cell) {
     return Utils.removeElementFromCell(cell.layers, 'W');
 };
 
-Map.prototype.generateRoomSizes = function(totalArea, roomNumber) {
+GameMap.prototype.generateRoomSizes = function(totalArea, roomNumber) {
     var deviations = [];
     var halfY = Math.floor(roomNumber / 2);
     for (var i = 0; i < halfY; i++) {
@@ -68,7 +68,7 @@ Map.prototype.generateRoomSizes = function(totalArea, roomNumber) {
     return roomParameters;
 };
 
-Map.prototype.placeRooms = function(roomParameters) {
+GameMap.prototype.placeRooms = function(roomParameters) {
     var roomsData = [];
     for (var i= 0; i < roomParameters.length; i++) {
         var widthRoom = roomParameters[i][0];
@@ -97,7 +97,7 @@ Map.prototype.placeRooms = function(roomParameters) {
     return roomsData;
 };
 
-Map.prototype.generatePassages = function() {
+GameMap.prototype.generatePassages = function() {
     var vertical = [], horizontal = [];
     var verticalCount = Utils.getRandomInRange(3,5);
     var horizontalCount = Utils.getRandomInRange(3,5);
@@ -108,7 +108,7 @@ Map.prototype.generatePassages = function() {
     return {vertical: vertical, horizontal: horizontal};
 };
 
-Map.prototype.applyPassages = function(passages) {
+GameMap.prototype.applyPassages = function(passages) {
     var self = this;
 
     passages.vertical.forEach(function(v) {
@@ -124,7 +124,7 @@ Map.prototype.applyPassages = function(passages) {
     });
 };
 
-Map.prototype.applyRooms = function(roomsData) {
+GameMap.prototype.applyRooms = function(roomsData) {
     var self = this;
     roomsData.forEach(function(room){
         for (var i = room.coords[1]; i < room.coords[1] + room.sides[1]; i++) {
@@ -133,54 +133,4 @@ Map.prototype.applyRooms = function(roomsData) {
             }
         }
     });
-};
-
-Map.prototype.render = function(container) {
-    container.innerHTML = '';
-
-    for (var x = 0; x < this.height; x++) {
-        for (var y = 0; y < this.width; y++) {
-            var cell = this.fieldStates[x][y];
-            var classes = cell.layers.map(function(el) {
-                return 'tile' + el;
-            }).join(' ');
-
-            var div = document.createElement('div');
-            div.className = classes;
-            div.style.top = (30 * x) + 'px';
-            div.style.left = (30 * y) + 'px';
-
-            // Health-див для игрока или врага
-            if ((cell.layers.indexOf('P') !== -1 || cell.layers.indexOf('E') !== -1)) {
-                var healthDiv = document.createElement('div');
-                healthDiv.className = 'health';
-                div.appendChild(healthDiv);
-            }
-
-            container.appendChild(div);
-            cell.element = div;
-        }
-    }
-
-};
-
-Map.prototype.updateCell = function(x, y) {
-    var cell = this.fieldStates[y][x];
-    var classes = [];
-    for (var i = 0; i < cell.layers.length; i++) {
-        classes.push('tile' + cell.layers[i]);
-    }
-    cell.element.className = classes.join(' ');
-
-    // health-див
-    if (cell.layers.indexOf('P') !== -1 || cell.layers.indexOf('E') !== -1) {
-        if (!cell.element.querySelector('.health')) {
-            var healthDiv = document.createElement('div');
-            healthDiv.className = 'health';
-            cell.element.appendChild(healthDiv);
-        }
-    } else {
-        var healthDiv = cell.element.querySelector('.health');
-        if (healthDiv) cell.element.removeChild(healthDiv);
-    }
 };
