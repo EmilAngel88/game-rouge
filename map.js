@@ -70,30 +70,42 @@ GameMap.prototype.generateRoomSizes = function(totalArea, roomNumber) {
 
 GameMap.prototype.placeRooms = function(roomParameters) {
     var roomsData = [];
-    for (var i= 0; i < roomParameters.length; i++) {
-        var widthRoom = roomParameters[i][0];
-        var heightRoom = roomParameters[i][1];
-        var coords = Utils.getRandomCoordsInRange(this.width - widthRoom, this.height - heightRoom);
-        var x = coords.x;
-        var y = coords.y;
+    var maxAttemptsPerRoom = 50; // чтоб не зациклиться
 
-        var intersects = false;
-        for (var dx= 0; dx < widthRoom; dx++) {
-            for (var dy= 0; dy < heightRoom; dy++) {
-                if (this.fieldStates[y+dy][x+dx].layers.indexOf('W') === -1) {
-                    intersects = true; break;
+    for (var i = 0; i < roomParameters.length; i++) {
+        var w = roomParameters[i][0];
+        var h = roomParameters[i][1];
+
+        var placed = false;
+        var attempts = 0;
+
+        while (!placed && attempts < maxAttemptsPerRoom) {
+            attempts++;
+
+            var coords = Utils.getRandomCoordsInRange(this.width - w, this.height - h);
+            var x = coords.x;
+            var y = coords.y;
+
+            var intersects = false;
+            for (var dx = 0; dx < w; dx++) {
+                for (var dy = 0; dy < h; dy++) {
+                    if (this.fieldStates[y + dy][x + dx].layers.indexOf('W') === -1) {
+                        intersects = true; // нашли НЕ-стену (коридор/комнату) → будет соединение
+                        break;
+                    }
                 }
+                if (intersects) break;
             }
-            if (intersects) break;
-        }
 
-        if (intersects) {
-            roomsData.push({ id: i, coords: [x, y], sides: roomParameters[i] });
-        } else {
-            roomParameters.splice(i, 1);
-            i--;
+            if (intersects) {
+                roomsData.push({ id: roomsData.length, coords: [x, y], sides: [w, h] });
+                placed = true;
+            }
+            // иначе повторяем попытку
         }
+        // если не нашли место за maxAttemptsPerRoom — комнату скипаем
     }
+
     return roomsData;
 };
 

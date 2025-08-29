@@ -229,10 +229,6 @@ Entities.prototype.enemyActing = function (enemy) {
 
 // Инициализация поведения игрока
 Entities.prototype.initPlayerControls = function (player) {
-    var mapEl = document.querySelector('.field')
-    mapEl.setAttribute('tabindex', '0');
-    mapEl.focus();
-
     var self = this;
     function handler(e) {
         var keyCode = e.keyCode
@@ -241,7 +237,7 @@ Entities.prototype.initPlayerControls = function (player) {
         if (changes) self.game.applyChanges(changes)
     }
 
-    mapEl.addEventListener('keydown', handler);
+    document.addEventListener('keydown', handler);
 }
 
 // Движения игрока
